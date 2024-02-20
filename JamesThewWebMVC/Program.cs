@@ -1,7 +1,22 @@
+using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+	.AddRazorPagesOptions(options =>
+	{
+		options.Conventions.AddAreaPageRoute("Client", "/Home/Index", "");
+	});
+
+var connectionString = builder.Configuration.GetConnectionString("JamesThewDbContext");
+builder.Services.AddDbContext<JamesThewDbContext>(x=>x.UseSqlServer(connectionString));
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -19,9 +34,20 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+	name: "root",
+	pattern: "",
+	defaults: new { area = "Client", controller = "Home", action = "Index" }
+);
+app.MapAreaControllerRoute(
+	name: "admin",
+	areaName: "Admin",
+	pattern: "Admin/{controller=Login}/{action=Index}/{id?}"
+	);
+app.MapControllerRoute(
+	name: "default",
+	pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

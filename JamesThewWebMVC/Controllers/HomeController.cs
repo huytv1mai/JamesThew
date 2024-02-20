@@ -18,11 +18,32 @@ namespace JamesThewWebMVC.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+		public IActionResult Login()
+		{
+			return View();
+		}
+		[HttpPost]
+		public IActionResult Login(LoginModel model)
+		{
+			if (model.UserName.Contains("client") && model.Password.Contains("client"))
+			{
+				TempData["Info"] = "Client";
+				return RedirectToAction("Index", "Home", new { area = "Client" });
+			}
+			return View(model);
+		}
+        public IActionResult About()
         {
             return View();
         }
-
+        public IActionResult Blog()
+        {
+            return View();
+        }
+        public IActionResult Contact()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
